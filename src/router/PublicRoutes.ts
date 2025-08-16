@@ -7,6 +7,7 @@ const PublicRoutes = {
     {
       name: 'Landing',
       path: '',
+      meta: { slug: 'Home' },
       component: () => import('@/views/landing/LandingPage.vue')
     },
     {
@@ -15,10 +16,36 @@ const PublicRoutes = {
       component: () => import('@/views/authentication/LoginPage.vue')
     },
     {
-      name: 'LoginAlt',
-      path: '/login1',
+      name: 'Products',
+      path: '/products',
+      meta: { slug: 'products' },
       component: () => import('@/views/authentication/auth/LoginPage.vue')
     },
+    {
+      name: 'Product Detail',
+      path: '/products/:slug',
+      meta: { isDynamicSeo: true, type: 'product' },
+      component: () => import('@/views/authentication/auth/LoginPage.vue')
+      // component: () => import('@/views/landing/products/ProductDetail.vue')
+    },
+    // {
+    //   name: 'Blogs',
+    //   path: '/blogs',
+    //   meta: { slug: 'blogs' },
+    //   component: () => import('@/views/landing/blogs/BlogList.vue')
+    // },
+    // {
+    //   name: 'Blog Detail',
+    //   path: '/blogs/:slug',
+    //   meta: { isDynamicSeo: true, type: 'blog' },
+    //   component: () => import('@/views/landing/blogs/BlogDetail.vue')
+    // },
+    //  {
+    //   name: 'About',
+    //   path: '/about',
+    //   meta: { slug: 'about' },
+    //   component: () => import('@/views/landing/AboutPage.vue')
+    // },
     {
       name: 'Register',
       path: '/register',
