@@ -53,9 +53,9 @@ const sidebarItem: menu[] = [
     to: '/admin/pages/blogs'
   },
   {
-    title: 'Kategori Blogs',
+    title: 'Category Blogs',
     icon: ProfileOutlined,
-    to: '/admin/pages/blogs'
+    to: '/admin/pages/category-blogs'
   },
   { header: 'Products' },
   {

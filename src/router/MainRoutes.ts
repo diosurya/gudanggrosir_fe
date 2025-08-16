@@ -28,11 +28,25 @@ const MainRoutes = {
       meta: { title: 'Settings' },
       component: () => import('@/views/admin/pages/settings/settings.vue')
     },
+     {
+      name: 'Blogs',
+      path: 'pages/blogs',
+      meta: { title: 'Blogs - Gudang Grosiran' },
+      component: () => import('@/views/admin/pages/blogs/Blogs.vue')
+    },
+    {
+      name: 'Blog Detail',
+      path: 'pages/blogs/:id',
+      meta: { title: 'Blog Detail - Gudang Grosiran' },
+      component: () => import('@/views/admin/pages/blogs/DetailBlogs.vue'),
+      props: true
+    },
     {
       name: 'Typography',
       path: 'typography',
       component: () => import('@/views/admin/typography/TypographyPage.vue')
     },
+
     {
       name: 'Colors',
       path: 'colors',
