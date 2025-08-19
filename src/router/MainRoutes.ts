@@ -41,6 +41,13 @@ const MainRoutes = {
       component: () => import('@/views/admin/pages/blogs/DetailBlogs.vue'),
       props: true
     },
+     {
+      name: 'Products',
+      path: 'pages/products',
+      meta: { title: 'Products - Gudang Grosiran' },
+      component: () => import('@/views/admin/pages/products/Products.vue'),
+      props: true
+    },
     {
       name: 'Typography',
       path: 'typography',

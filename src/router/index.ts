@@ -11,6 +11,7 @@ export const router = createRouter({
     PublicRoutes,
     MainRoutes,
     {
+      
       path: '/:pathMatch(.*)*',
       name: 'NotFound',
       component: () => import('@/views/admin/pages/maintenance/error/Error404Page.vue')

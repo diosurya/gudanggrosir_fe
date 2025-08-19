@@ -9,6 +9,7 @@ import VueTablerIcons from 'vue-tabler-icons';
 import VueApexCharts from 'vue3-apexcharts';
 import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/reset.css';
+import PrimeVue from 'primevue/config';
 // import CKEditor from '@ckeditor/ckeditor5-vue'; // Baris ini sudah benar
 
 // google-fonts
@@ -27,6 +28,7 @@ app.use(PerfectScrollbarPlugin);
 app.use(createPinia());
 app.use(VueTablerIcons);
 app.use(Antd);
+app.use(PrimeVue);
 // app.use(CKEditor); // Baris ini yang perlu diubah
 app.use(VueApexCharts);
 app.use(vuetify).mount('#app');

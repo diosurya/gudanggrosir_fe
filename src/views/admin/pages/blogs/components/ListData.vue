@@ -4,6 +4,7 @@ import { useRouter } from "vue-router"
 import UiTitleCard from "@/components/shared/UiTitleCard.vue"
 import { blogService, type Blog } from "@/api/services/blogService"
 import SkeletonLoader from "@/components/shared/SkeletonLoader.vue"
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons-vue'
 
 const blogs = ref<Blog[]>([])
 const total = ref(0)
@@ -62,6 +63,15 @@ const confirmDelete = async () => {
   }
 }
 
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'Published': return 'success'
+    case 'Draft': return 'grey'
+    case 'Deactived': return 'error'
+    default: return 'grey'
+  }
+}
+
 onMounted(fetchBlogs)
 watch([page, searchQuery, startDate, endDate], fetchBlogs)
 </script>
@@ -107,6 +117,7 @@ watch([page, searchQuery, startDate, endDate], fetchBlogs)
           <th class="text-left">Excerpt</th>
           <th class="text-left">Author</th>
           <th class="text-left">Category</th>
+          <th class="text-left">Status</th>
           <th class="text-left w-40">Actions</th>
         </tr>
       </thead>
@@ -117,9 +128,22 @@ watch([page, searchQuery, startDate, endDate], fetchBlogs)
           <td class="py-3 truncate max-w-[300px]">{{ blog.excerpt }}</td>
           <td class="py-3">{{ blog.author?.name }}</td>
           <td class="py-3">{{ blog.category?.name }}</td>
+          <!-- Status column -->
+          <td class="py-3">
+            <v-chip variant="text" size="small" class="px-0">
+              <v-avatar
+                size="8"
+                :color="getStatusColor(blog.status)"
+                variant="flat"
+                class="mr-2"
+              ></v-avatar>
+              <p class="text-h6 mb-0">{{ blog.status }}</p>
+            </v-chip>
+          </td>
+
           <td class="py-3 flex gap-2">
-            <v-btn size="small" color="primary" @click="handleEdit(blog.id)">
-              Edit
+            <v-btn size="small" class="mr-1" color="primary" @click="handleEdit(blog.id)">
+                <EditOutlined class="mr-1" />
             </v-btn>
             <v-btn
               size="small"
@@ -127,7 +151,7 @@ watch([page, searchQuery, startDate, endDate], fetchBlogs)
               variant="outlined"
               @click="handleDelete(blog)"
             >
-              Delete
+              <DeleteOutlined class="mr-1" />
             </v-btn>
           </td>
         </tr>
@@ -154,8 +178,7 @@ watch([page, searchQuery, startDate, endDate], fetchBlogs)
           Confirm Delete
         </v-card-title>
         <v-card-text>
-          Are you sure you want to delete
-          <strong>{{ selectedBlog?.title }}</strong>?
+          Are you sure you want to delete ?
         </v-card-text>
         <v-card-actions>
           <v-spacer />
