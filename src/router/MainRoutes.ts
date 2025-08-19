@@ -43,9 +43,22 @@ const MainRoutes = {
     },
      {
       name: 'Products',
-      path: 'pages/products',
+      path: 'ecommerce/products',
       meta: { title: 'Products - Gudang Grosiran' },
       component: () => import('@/views/admin/pages/products/Products.vue'),
+      props: true
+    },
+    {
+      name: 'Add Product',
+      path: 'ecommerce/products/add',
+      meta: { title: 'Add Product - Gudang Grosiran' },
+      component: () => import('@/views/admin/pages/products/AddProduct.vue')
+    },
+    {
+      name: 'Edit Product',
+      path: 'ecommerce/products/:id',
+      meta: { title: 'Edit Product - Gudang Grosiran' },
+      component: () => import('@/views/admin/pages/products/EditProduct.vue'),
       props: true
     },
     {

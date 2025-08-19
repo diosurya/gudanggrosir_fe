@@ -37,7 +37,7 @@
     }
 
     const handleEdit = (id: number) => {
-    router.push(`/admin/pages/products/${id}`)
+    router.push(`/admin/ecommerce/products/${id}`)
     }
 
     const handleDelete = (product: Product) => {
@@ -88,10 +88,10 @@
           <td>{{ product.price }}</td>
           <td>{{ product.quantity }}</td>
           <td class="flex gap-2">
-            <v-btn size="small" color="primary" @click="handleEdit(product.id)">
+            <v-btn size="small" class="mr-1" color="primary" @click="handleEdit(product.id)">
               <EditOutlined class="mr-1" />
             </v-btn>
-            <v-btn size="small" color="error" variant="outlined" @click="handleDelete(product)">
+            <v-btn size="small" class="mr-1" color="error" variant="outlined" @click="handleDelete(product)">
               <DeleteOutlined class="mr-1" />
             </v-btn>
           </td>

@@ -37,32 +37,66 @@ const sidebarItem: menu[] = [
   },
   { header: 'Pages' },
   {
-    title: 'Beranda',
+    title: 'Pages',
     icon: LoginOutlined,
-    to: '/admin/pages/beranda'
+    to: '/admin/pages/beranda',
+    children: [
+        {
+          title: 'Beranda',
+          to: '/admin/pages/beranda'
+        },
+        {
+          title: 'About',
+          to: '/admin/pages/about'
+        },
+        {
+          title: 'Tag',
+          to: '/admin/pages/products/fashion'
+        }
+      ]
   },
-  {
-    title: 'About',
-    icon: ProfileOutlined,
-    to: '/admin/pages/about'
-  },
-  { header: 'Blogs' },
+
+  { header: 'Posts' },
   {
     title: 'Blogs',
     icon: ProfileOutlined,
-    to: '/admin/pages/blogs'
+    to: '/admin/pages/blogs',
+    children: [
+        {
+          title: 'Blogs',
+          to: '/admin/pages/blogs'
+        },
+        {
+          title: 'Category',
+          to: '/admin/pages/category-blog'
+        },
+        {
+          title: 'Tag',
+          to: '/admin/pages/products/fashion'
+        }
+      ]
   },
-  {
-    title: 'Category Blogs',
-    icon: ProfileOutlined,
-    to: '/admin/pages/category-blogs'
-  },
-  { header: 'Products' },
+  { header: 'E-Commerce' },
   {
     title: 'Products',
     icon: ProfileOutlined,
-    to: '/admin/pages/products'
+    to: '/admin/ecommerce/products',
+      children: [
+        {
+          title: 'Products',
+          to: '/admin/ecommerce/products'
+        },
+        {
+          title: 'Category',
+          to: '/admin/ecommerce/products/electronics'
+        },
+        {
+          title: 'Tag',
+          to: '/admin/ecommerce/products/fashion'
+        }
+      ]
   },
+
   { header: 'Settings' },
   {
     title: 'Settings',

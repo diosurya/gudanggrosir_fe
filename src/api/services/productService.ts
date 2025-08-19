@@ -1,10 +1,11 @@
-import apiClient from "../axios";
-import { API_ENDPOINTS } from "../endpoints";
+import apiClient from "../axios"
+import { API_ENDPOINTS } from "../endpoints"
 
 export interface Product {
   id: number
   name: string
   slug: string
+  status?: string
   description?: string
   short_description?: string
   sku?: string
@@ -21,28 +22,34 @@ export interface Product {
 
 export const productService = {
   getAll(params?: any) {
-    return apiClient.get("/products", { params })
+    return apiClient.get(API_ENDPOINTS.products, { params })
   },
+
   get(id: number) {
-    return apiClient.get(`/products/${id}`)
+    return apiClient.get(`${API_ENDPOINTS.products}/${id}`)
   },
+
   create(data: Partial<Product>) {
-    return apiClient.post("/products", data)
+    return apiClient.post(API_ENDPOINTS.products, data)
   },
+
   update(id: number, data: Partial<Product>) {
-    return apiClient.put(`/products/${id}`, data)
+    return apiClient.put(`${API_ENDPOINTS.products}/${id}`, data)
   },
+
   delete(id: number) {
-    return apiClient.delete(`/products/${id}`)
+    return apiClient.delete(`${API_ENDPOINTS.products}/${id}`)
   },
-  // additional
+
   getVariants(productId: number) {
-    return apiClient.get(`/products/${productId}/variants`)
+    return apiClient.get(`${API_ENDPOINTS.products}/${productId}/variants`)
   },
+
   createVariant(productId: number, data: any) {
-    return apiClient.post(`/products/${productId}/variants`, data)
+    return apiClient.post(`${API_ENDPOINTS.products}/${productId}/variants`, data)
   },
+
   search(query: string) {
-    return apiClient.get(`/products/search`, { params: { q: query } })
+    return apiClient.get(`${API_ENDPOINTS.products}/search`, { params: { q: query } })
   },
 }
