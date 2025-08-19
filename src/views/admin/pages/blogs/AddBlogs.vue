@@ -1,35 +1,30 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue"
-import { useRoute, useRouter } from "vue-router"
+import { useRouter } from "vue-router"
 import BaseBreadcrumb from "@/components/shared/BaseBreadcrumb.vue"
 import UiParentCard from "@/components/shared/UiParentCard.vue"
 import SkeletonLoader from "@/components/shared/SkeletonLoader.vue"
 import { blogService, type Blog } from "@/api/services/blogService"
 import apiClient from "@/api/axios"
 
-const route = useRoute()
 const router = useRouter()
-const id = route.params.id as string
 
 const loading = ref(false)
 const saving = ref(false)
-const blog = ref<Partial<Blog>>({})
+const blog = ref<Partial<Blog>>({
+  title: "",
+  slug: "",
+  excerpt: "",
+  content: "",
+  seo_title: "",
+  seo_description: "",
+  seo_keywords: "",
+  status: "Draft",
+  category_id: null,
+  image_url: null
+})
 const categories = ref<{ id: number; name: string }[]>([])
-
 const previewSrc = ref<string | null>(null)
-
-const fetchBlog = async () => {
-  loading.value = true
-  try {
-    const { data } = await blogService.getById(id)
-    blog.value = data
-    previewSrc.value = blog.value.image_url || null
-  } catch (err) {
-    console.error("Failed to load blog", err)
-  } finally {
-    loading.value = false
-  }
-}
 
 const fetchCategories = async () => {
   try {
@@ -79,7 +74,7 @@ const resetImage = () => {
 const saveBlog = async () => {
   saving.value = true
   try {
-    await blogService.update(id, blog.value)
+    await blogService.create(blog.value)
     router.push("/admin/pages/blogs")
   } catch (err) {
     console.error("Failed to save blog", err)
@@ -95,24 +90,23 @@ const statusOptions = [
 ]
 
 onMounted(() => {
-  fetchBlog()
   fetchCategories()
 })
 
 const breadcrumbs = computed(() => [
   { title: "Dashboard", disabled: false, href: "/admin/dashboard" },
   { title: "Blogs", disabled: false, href: "/admin/pages/blogs" },
-  { title: blog.value?.title || "Detail", disabled: true, href: "#" }
+  { title: "Add Blog", disabled: true, href: "#" }
 ])
 </script>
 
 <template>
-  <BaseBreadcrumb :title="blog.title" :breadcrumbs="breadcrumbs" />
+  <BaseBreadcrumb title="Add Blog" :breadcrumbs="breadcrumbs" />
 
   <v-row>
     <!-- Main Form -->
     <v-col cols="8">
-      <UiParentCard :title="blog.title || 'Detail Blog'">
+      <UiParentCard title="Add Blog">
         <template v-if="loading">
           <SkeletonLoader type="card" :rows="5" />
         </template>
@@ -177,9 +171,6 @@ const breadcrumbs = computed(() => [
     <v-col cols="4">
       <!-- Status -->
       <UiParentCard :title="'Publish'" class="mb-3">
-        <template v-if="loading">
-          <SkeletonLoader type="card" :rows="5" />
-        </template>
         <v-row>
           <v-col cols="12" class="mb-1">
             <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
@@ -197,9 +188,6 @@ const breadcrumbs = computed(() => [
 
       <!-- Category -->
       <UiParentCard :title="'Category'" class="mb-3">
-        <template v-if="loading">
-          <SkeletonLoader type="card" :rows="5" />
-        </template>
         <v-row>
           <v-col cols="12" class="mb-1">
             <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
@@ -217,9 +205,6 @@ const breadcrumbs = computed(() => [
 
       <!-- Feature Image -->
       <UiParentCard :title="'Feature Image'">
-        <template v-if="loading">
-          <SkeletonLoader type="card" :rows="5" />
-        </template>
         <v-row>
           <v-col cols="12" class="mb-4">
             <div class="flex flex-col items-center gap-4">

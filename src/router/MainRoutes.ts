@@ -41,24 +41,31 @@ const MainRoutes = {
       component: () => import('@/views/admin/pages/blogs/DetailBlogs.vue'),
       props: true
     },
+    {
+      name: 'Add Blogs',
+      path: 'pages/blogs/add',
+      meta: { title: 'Add Blogs - Gudang Grosiran' },
+      component: () => import('@/views/admin/pages/blogs/AddBlogs.vue'),
+      props: true
+    },
      {
       name: 'Products',
       path: 'ecommerce/products',
       meta: { title: 'Products - Gudang Grosiran' },
-      component: () => import('@/views/admin/pages/products/Products.vue'),
+      component: () => import('@/views/admin/ecommerce/products/Products.vue'),
       props: true
     },
     {
       name: 'Add Product',
       path: 'ecommerce/products/add',
       meta: { title: 'Add Product - Gudang Grosiran' },
-      component: () => import('@/views/admin/pages/products/AddProduct.vue')
+      component: () => import('@/views/admin/ecommerce/products/AddProduct.vue')
     },
     {
       name: 'Edit Product',
       path: 'ecommerce/products/:id',
       meta: { title: 'Edit Product - Gudang Grosiran' },
-      component: () => import('@/views/admin/pages/products/EditProduct.vue'),
+      component: () => import('@/views/admin/ecommerce/products/EditProduct.vue'),
       props: true
     },
     {

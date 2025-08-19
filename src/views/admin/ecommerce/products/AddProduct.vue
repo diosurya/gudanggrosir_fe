@@ -27,7 +27,8 @@ const product = ref({
   seo_title: "",
   seo_keywords: "",
   seo_description: "",
-  image_url: null as string | null
+  image_url: null as string | null,
+  images: [] as Array<{ image_url: string; alt_text?: string }>
 })
 
 // kategori
@@ -67,6 +68,57 @@ const handleImageUpload = async (e: Event) => {
   }
 }
 
+// Multiple images upload
+const productImages = ref<Array<{ preview: string; image_url: string; alt_text?: string }>>([])
+const uploadingImages = ref(false)
+
+const handleMultipleImageUpload = async (e: Event) => {
+  const target = e.target as HTMLInputElement
+  if (!target.files?.length) return
+  
+  uploadingImages.value = true
+  const files = Array.from(target.files)
+  
+  try {
+    for (const file of files) {
+      // Create preview
+      const reader = new FileReader()
+      reader.onload = (ev) => {
+        const preview = ev.target?.result as string
+        
+        // Upload file
+        const formData = new FormData()
+        formData.append("image", file)
+        
+        apiClient.post("/upload", formData, {
+          headers: { "Content-Type": "multipart/form-data" }
+        }).then(res => {
+          productImages.value.push({
+            preview,
+            image_url: res.data.url,
+            alt_text: file.name
+          })
+        }).catch(err => {
+          console.error("Upload failed", err)
+        })
+      }
+      reader.readAsDataURL(file)
+    }
+  } catch (err) {
+    console.error("Multiple upload failed", err)
+  } finally {
+    uploadingImages.value = false
+  }
+}
+
+const removeProductImage = (index: number) => {
+  productImages.value.splice(index, 1)
+}
+
+const resetAllImages = () => {
+  productImages.value = []
+}
+
 const resetImage = () => {
   previewSrc.value = null
   product.value.image_url = null
@@ -75,8 +127,14 @@ const resetImage = () => {
 const saveProduct = async () => {
   saving.value = true
   try {
+    // Set images data
+    product.value.images = productImages.value.map(img => ({
+      image_url: img.image_url,
+      alt_text: img.alt_text
+    }))
+    
     await productService.create(product.value)
-    router.push("/admin/pages/products")
+    router.push("/admin/ecommerce/products")
   } catch (err) {
     console.error("Failed to save product", err)
   } finally {
@@ -86,7 +144,7 @@ const saveProduct = async () => {
 
 const breadcrumbs = computed(() => [
   { title: "Dashboard", disabled: false, href: "/admin/dashboard" },
-  { title: "Products", disabled: false, href: "/admin/pages/products" },
+  { title: "Products", disabled: false, href: "/admin/ecommerce/products" },
   { title: "Add Product", disabled: true, href: "#" }
 ])
 
@@ -131,6 +189,76 @@ fetchCategories()
             <v-textarea v-model="product.description" rows="8" density="compact" />
           </v-col>
 
+          <!-- Product Images Section -->
+          <v-col cols="12" class="mb-4">
+            <h3 class="font-semibold mb-3">Images</h3>
+            
+            <!-- Image Preview Grid - Style seperti screenshot -->
+            <div v-if="productImages.length > 0" class="image-grid mb-4">
+              <div 
+                v-for="(image, index) in productImages" 
+                :key="index"
+                class="image-item"
+              >
+                <div class="image-wrapper">
+                  <img 
+                    :src="image.preview" 
+                    :alt="image.alt_text"
+                    class="product-image"
+                  />
+                  <div class="image-overlay">
+                    <v-btn
+                      @click="removeProductImage(index)"
+                      icon="mdi-close"
+                      size="small"
+                      color="error"
+                      class="remove-btn"
+                    ></v-btn>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Upload Controls -->
+            <div class="upload-section">
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                @change="handleMultipleImageUpload"
+                class="hidden"
+                ref="imageInput"
+                id="productImages"
+              />
+              
+              <div class="upload-controls">
+                <label
+                  for="productImages"
+                  class="add-images-btn"
+                  :class="{ 'loading': uploadingImages }"
+                >
+                  <v-icon left>mdi-plus</v-icon>
+                  <span v-if="uploadingImages">Uploading...</span>
+                  <span v-else>Add Images</span>
+                </label>
+                
+                <v-btn
+                  v-if="productImages.length > 0"
+                  color="error"
+                  variant="text"
+                  size="small"
+                  @click="resetAllImages"
+                >
+                  Reset
+                </v-btn>
+              </div>
+              
+              <div class="upload-info">
+                <span class="image-count">{{ productImages.length }} image(s) selected</span>
+              </div>
+            </div>
+          </v-col>
+
           <!-- Pricing -->
           <v-col cols="12" class="mb-1">
             <h3 class="font-semibold">Pricing</h3>
@@ -155,7 +283,7 @@ fetchCategories()
           <v-col cols="6">
             <v-text-field v-model="product.barcode" label="Barcode" variant="outlined" density="compact" />
           </v-col>
-          <v-col cols="6">
+          <v-col cols="12">
             <v-switch v-model="product.track_quantity" label="Track Quantity" density="compact" />
           </v-col>
           <v-col cols="6">
@@ -215,7 +343,7 @@ fetchCategories()
       </UiParentCard>
 
       <!-- Feature Image -->
-      <UiParentCard title="Feature Image">
+      <UiParentCard title="Cover Product">
         <div class="flex flex-col items-center gap-4">
           <img
             v-if="previewSrc"
@@ -231,3 +359,108 @@ fetchCategories()
     </v-col>
   </v-row>
 </template>
+
+<style scoped>
+/* Image Grid Styling - Similar to screenshot */
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.image-item {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+}
+
+.image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.image-item:hover .image-overlay {
+  opacity: 1;
+}
+
+.remove-btn {
+  background: rgba(244, 67, 54, 0.9) !important;
+}
+
+/* Upload Section */
+.upload-section {
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  background: #f9fafb;
+}
+
+.upload-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.add-images-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #1976d2;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.add-images-btn:hover:not(.loading) {
+  background: #1565c0;
+}
+
+.add-images-btn.loading {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.upload-info {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.image-count {
+  font-weight: 500;
+}
+
+.hidden {
+  display: none;
+}
+</style>

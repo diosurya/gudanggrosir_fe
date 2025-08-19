@@ -50,7 +50,16 @@ export const blogService = {
 
 
   async create(payload: Partial<Blog>) {
-    return apiClient.post<Blog>(API_ENDPOINTS.posts, payload);
+    // return apiClient.post<Blog>(API_ENDPOINTS.posts, payload);
+    const user = JSON.parse(sessionStorage.getItem("user") || "{}")
+
+    const finalPayload = {
+      ...payload,
+      author_id: user?.id ?? null
+    }
+
+    return apiClient.post<Blog>(API_ENDPOINTS.posts, finalPayload)
+
   },
 
   async update(id: number | string, payload: Partial<Blog>) {

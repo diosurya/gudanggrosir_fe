@@ -84,7 +84,7 @@ const saveProduct = async () => {
   saving.value = true
   try {
     await productService.update(id, product.value)
-    router.push("/admin/pages/products")
+    router.push("/admin/ecommerce/products")
   } catch (err) {
     console.error("Failed to save product", err)
   } finally {
@@ -105,7 +105,7 @@ onMounted(() => {
 
 const breadcrumbs = computed(() => [
   { title: "Dashboard", disabled: false, href: "/admin/dashboard" },
-  { title: "Products", disabled: false, href: "/admin/pages/products" },
+  { title: "Products", disabled: false, href: "/admin/ecommerce/products" },
   { title: product.value?.name || "Detail", disabled: true, href: "#" }
 ])
 </script>
