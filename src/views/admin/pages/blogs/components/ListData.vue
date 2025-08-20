@@ -22,7 +22,7 @@ const router = useRouter()
 const fetchBlogs = async () => {
   loading.value = true
   try {
-    const { data } = await blogService.getAll({
+    const res = await blogService.getAll({
       page: page.value,
       per_page: perPage.value,
       search: searchQuery.value || undefined,
@@ -30,9 +30,11 @@ const fetchBlogs = async () => {
       end_date: endDate.value || undefined
     })
 
-    blogs.value = data.data
-    total.value = data.total
-    perPage.value = data.per_page
+    console.log("Response Blogs:", res)
+
+    blogs.value = res.data.data  
+    total.value = res.data.total
+    perPage.value = res.data.per_page
   } catch (err) {
     console.error("Failed to fetch blogs:", err)
   } finally {

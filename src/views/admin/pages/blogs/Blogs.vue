@@ -7,7 +7,7 @@ import { useRouter } from "vue-router"
 const router = useRouter()
 
 const breadcrumbs = [
-  { title: "Dashboard", disabled: false, href: "/" },
+  { title: "Dashboard", disabled: false, href: "/admin/dashboard" },
   { title: "Blogs", disabled: true, href: "#" }
 ]
 

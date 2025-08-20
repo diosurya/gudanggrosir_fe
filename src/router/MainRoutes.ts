@@ -26,7 +26,7 @@ const MainRoutes = {
       name: 'Settings Pages About',
       path: 'pages/settings',
       meta: { title: 'Settings' },
-      component: () => import('@/views/admin/pages/settings/settings.vue')
+      component: () => import('@/views/admin/pages/settings/Settings.vue')
     },
      {
       name: 'Blogs',

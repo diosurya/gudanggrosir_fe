@@ -1,8 +1,7 @@
 export const API_ENDPOINTS = {
   users: "/users",
   products: "/products",
-  posts: "/posts",
-  blogs: "/blogs", 
+  blogs: "/blogs",
   auth: {
     login: "/auth/login",
     register: "/auth/register",

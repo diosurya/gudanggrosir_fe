@@ -20,7 +20,7 @@ const footerLink = shallowRef([
         <p class="text-subtitle-2 text-lightText mb-md-0 mb-4">
           This site is protected by
           <span class="text-primary">Privacy Policy</span>. Distributed by
-          <a href="https://themewagon.com" target="_blank" rel="noopener noreferrer" class="cursor-pointer text-primary"> ThemeWagon </a>
+          <a href="https://github.com/diosurya" target="_blank" rel="noopener noreferrer" class="cursor-pointer text-primary"> Dio Putra </a>
         </p>
       </v-col>
       <v-col class="d-flex flex-md-row flex-column justify-md-end align-center" cols="12" md="6">

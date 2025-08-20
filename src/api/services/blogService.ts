@@ -41,11 +41,11 @@ export interface PaginatedResponse<T> {
 
 export const blogService = {
    async getAll(params?: any) {
-    return apiClient.get<PaginatedResponse<Blog>>(API_ENDPOINTS.posts, { params });
+    return apiClient.get<PaginatedResponse<Blog>>(API_ENDPOINTS.blogs, { params });
   },
 
  async getById(id: number | string) {
-    return apiClient.get<Blog>(`${API_ENDPOINTS.posts}/${id}`);
+    return apiClient.get<Blog>(`${API_ENDPOINTS.blogs}/${id}`);
   },
 
 
@@ -58,15 +58,15 @@ export const blogService = {
       author_id: user?.id ?? null
     }
 
-    return apiClient.post<Blog>(API_ENDPOINTS.posts, finalPayload)
+    return apiClient.post<Blog>(API_ENDPOINTS.blogs, finalPayload)
 
   },
 
   async update(id: number | string, payload: Partial<Blog>) {
-    return apiClient.put(`${API_ENDPOINTS.posts}/${id}`, payload);
+    return apiClient.put(`${API_ENDPOINTS.blogs}/${id}`, payload);
   },
 
   async delete(id: number | string) {
-    return apiClient.delete(`${API_ENDPOINTS.posts}/${id}`);
+    return apiClient.delete(`${API_ENDPOINTS.blogs}/${id}`);
   },
 };

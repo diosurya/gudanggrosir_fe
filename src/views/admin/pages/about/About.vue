@@ -16,6 +16,7 @@ const page = computed({
 })
 
 const breadcrumbs = computed(() => [
+  { title: "Dashboard", disabled: false, href: "/admin/dashboard" },
   { title: page.value?.title || 'Untitled', disabled: true, href: '#' }
 ])
 
