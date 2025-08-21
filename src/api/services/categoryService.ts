@@ -1,32 +1,47 @@
 import apiClient from "../axios";
 import { API_ENDPOINTS } from "../endpoints";
 
-export interface CategoryProduct {
-  id: number
-  name: string
-  slug: string
-  parent_id?: number | null
-  created_at?: string
-  updated_at?: string
+export interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
-export const categoryProductService = {
-  getAll(params?: any) {
-    return apiClient.get("/category_products", { params })
-  },
-  get(id: number) {
-    return apiClient.get(`/category_products/${id}`)
-  },
-  create(data: Partial<CategoryProduct>) {
-    return apiClient.post("/category_products", data)
-  },
-  update(id: number, data: Partial<CategoryProduct>) {
-    return apiClient.put(`/category_products/${id}`, data)
-  },
-  delete(id: number) {
-    return apiClient.delete(`/category_products/${id}`)
-  },
-  getTree() {
-    return apiClient.get("/categories/tree")
-  },
+export interface CategoryCreatePayload {
+  name: string;
+  slug: string;
+  description?: string;
 }
+
+export interface PaginatedResponse<T> {
+  current_page: number;
+  data: T[];
+  total: number;
+  per_page: number;
+  last_page: number;
+}
+
+export const categoryService = {
+  async getAll(params?: any) {
+    return apiClient.get<PaginatedResponse<Category>>('/categories', { params });
+  },
+
+  async getById(id: number | string) {
+    return apiClient.get<Category>(`/categories/${id}`);
+  },
+
+  async create(payload: CategoryCreatePayload) {
+    return apiClient.post<Category>('/categories', payload);
+  },
+
+  async update(id: number | string, payload: Partial<CategoryCreatePayload>) {
+    return apiClient.put<Category>(`/categories/${id}`, payload);
+  },
+
+  async delete(id: number | string) {
+    return apiClient.delete(`/categories/${id}`);
+  },
+};

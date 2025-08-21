@@ -1,46 +1,63 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue"
-import { useRouter } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import BaseBreadcrumb from "@/components/shared/BaseBreadcrumb.vue"
 import UiParentCard from "@/components/shared/UiParentCard.vue"
 import SkeletonLoader from "@/components/shared/SkeletonLoader.vue"
+import SelectCategory from "./components/CategorySelect.vue"
 import { blogService, type Blog } from "@/api/services/blogService"
 import apiClient from "@/api/axios"
 
+const route = useRoute()
 const router = useRouter()
+const id = route.params.id as string
 
 const loading = ref(false)
 const saving = ref(false)
-const blog = ref<Partial<Blog>>({
-  title: "",
-  slug: "",
-  excerpt: "",
-  content: "",
-  seo_title: "",
-  seo_description: "",
-  seo_keywords: "",
-  status: "Draft",
-  category_id: null,
-  image_url: null
-})
+const blog = ref<Partial<Blog>>({})
 const categories = ref<{ id: number; name: string }[]>([])
+const categoriesLoading = ref(false)
+
 const previewSrc = ref<string | null>(null)
 
+const fetchBlog = async () => {
+  loading.value = true
+  try {
+    const { data } = await blogService.getById(id)
+    blog.value = data
+    // previewSrc.value = blog.value.image_url || null
+  } catch (err) {
+    console.error("Failed to load blog", err)
+  } finally {
+    loading.value = false
+  }
+}
+
 const fetchCategories = async () => {
+  categoriesLoading.value = true
   try {
     const res = await apiClient.get("/categories")
     categories.value = res.data.data
   } catch (err) {
     console.error("Failed to load categories", err)
+  } finally {
+    categoriesLoading.value = false
   }
 }
 
 const selectedCategory = computed({
   get: () => blog.value.category_id ? Number(blog.value.category_id) : null,
-  set: (val: number) => {
-    blog.value.category_id = val
+  set: (val: number | null) => {
+    // blog.value.category_id = val
   }
 })
+
+// Handler untuk ketika category baru ditambahkan
+const onCategoryAdded = (newCategory: { id: number; name: string }) => {
+  // Refresh categories list
+  categories.value.push(newCategory)
+  // Auto-select kategori yang baru dibuat sudah dihandle di komponen SelectCategory
+}
 
 const handleImageUpload = async (e: Event) => {
   const target = e.target as HTMLInputElement
@@ -60,7 +77,7 @@ const handleImageUpload = async (e: Event) => {
     const res = await apiClient.post("/upload", formData, {
       headers: { "Content-Type": "multipart/form-data" }
     })
-    blog.value.image_url = res.data.url
+    // blog.value.image_url = res.data.url
   } catch (err) {
     console.error("Upload failed", err)
   }
@@ -68,13 +85,13 @@ const handleImageUpload = async (e: Event) => {
 
 const resetImage = () => {
   previewSrc.value = null
-  blog.value.image_url = null
+  // blog.value.image_url = null
 }
 
 const saveBlog = async () => {
   saving.value = true
   try {
-    await blogService.create(blog.value)
+    await blogService.update(id, blog.value)
     router.push("/admin/pages/blogs")
   } catch (err) {
     console.error("Failed to save blog", err)
@@ -90,23 +107,24 @@ const statusOptions = [
 ]
 
 onMounted(() => {
+  fetchBlog()
   fetchCategories()
 })
 
 const breadcrumbs = computed(() => [
   { title: "Dashboard", disabled: false, href: "/admin/dashboard" },
   { title: "Blogs", disabled: false, href: "/admin/pages/blogs" },
-  { title: "Add Blog", disabled: true, href: "#" }
+  { title: blog.value?.title || "Add", disabled: true, href: "#" }
 ])
 </script>
 
 <template>
-  <BaseBreadcrumb title="Add Blog" :breadcrumbs="breadcrumbs" />
+  <BaseBreadcrumb :title="blog.title" :breadcrumbs="breadcrumbs" />
 
   <v-row>
     <!-- Main Form -->
     <v-col cols="8">
-      <UiParentCard title="Add Blog">
+      <UiParentCard :title="blog.title || 'Add Blog'">
         <template v-if="loading">
           <SkeletonLoader type="card" :rows="5" />
         </template>
@@ -171,6 +189,9 @@ const breadcrumbs = computed(() => [
     <v-col cols="4">
       <!-- Status -->
       <UiParentCard :title="'Publish'" class="mb-3">
+        <template v-if="loading">
+          <SkeletonLoader type="card" :rows="5" />
+        </template>
         <v-row>
           <v-col cols="12" class="mb-1">
             <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
@@ -186,18 +207,18 @@ const breadcrumbs = computed(() => [
         </v-row>
       </UiParentCard>
 
-      <!-- Category -->
+      <!-- Category - Menggunakan SelectCategory component -->
       <UiParentCard :title="'Category'" class="mb-3">
+        <template v-if="loading">
+          <SkeletonLoader type="card" :rows="5" />
+        </template>
         <v-row>
           <v-col cols="12" class="mb-1">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-            <v-select
+            <SelectCategory 
               v-model="selectedCategory"
-              :items="categories"
-              item-title="name"
-              item-value="id"
-              variant="outlined"
-              density="compact"
+              :categories="categories"
+              :loading="categoriesLoading"
+              @category-added="onCategoryAdded"
             />
           </v-col>
         </v-row>
@@ -205,6 +226,9 @@ const breadcrumbs = computed(() => [
 
       <!-- Feature Image -->
       <UiParentCard :title="'Feature Image'">
+        <template v-if="loading">
+          <SkeletonLoader type="card" :rows="5" />
+        </template>
         <v-row>
           <v-col cols="12" class="mb-4">
             <div class="flex flex-col items-center gap-4">

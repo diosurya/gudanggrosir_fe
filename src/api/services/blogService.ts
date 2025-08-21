@@ -1,6 +1,11 @@
 import apiClient from "../axios";
 import { API_ENDPOINTS } from "../endpoints";
 
+export interface BlogImage {
+  url: string;
+  is_cover: boolean;
+}
+
 export interface Blog {
   id: number;
   title: string;
@@ -10,9 +15,10 @@ export interface Blog {
   seo_title: string;
   seo_description: string;
   seo_keywords: string;
-  image_url: string;
-  category_id: number;
+  images: BlogImage[];
+  category_id?: string;
   author_id: number;
+  status: "Draft" | "Published" | "Deactived";
   published_at: string;
   created_at: string;
   updated_at: string;
@@ -25,7 +31,7 @@ export interface Blog {
     bio: string;
   };
   category: {
-    id: number;
+    id: string;
     name: string;
     slug: string;
   };
@@ -40,26 +46,23 @@ export interface PaginatedResponse<T> {
 }
 
 export const blogService = {
-   async getAll(params?: any) {
+  async getAll(params?: any) {
     return apiClient.get<PaginatedResponse<Blog>>(API_ENDPOINTS.blogs, { params });
   },
 
- async getById(id: number | string) {
+  async getById(id: number | string) {
     return apiClient.get<Blog>(`${API_ENDPOINTS.blogs}/${id}`);
   },
 
-
   async create(payload: Partial<Blog>) {
-    // return apiClient.post<Blog>(API_ENDPOINTS.posts, payload);
-    const user = JSON.parse(sessionStorage.getItem("user") || "{}")
+    const user = JSON.parse(sessionStorage.getItem("user") || "{}");
 
     const finalPayload = {
       ...payload,
       author_id: user?.id ?? null
-    }
+    };
 
-    return apiClient.post<Blog>(API_ENDPOINTS.blogs, finalPayload)
-
+    return apiClient.post<Blog>(API_ENDPOINTS.blogs, finalPayload);
   },
 
   async update(id: number | string, payload: Partial<Blog>) {
