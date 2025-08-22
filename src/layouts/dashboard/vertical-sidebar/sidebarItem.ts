@@ -49,10 +49,10 @@ const sidebarItem: menu[] = [
           title: 'About',
           to: '/admin/pages/about'
         },
-        {
-          title: 'Tag',
-          to: '/admin/pages/products/fashion'
-        }
+        // {
+        //   title: 'Tag',
+        //   to: '/admin/pages/products/fashion'
+        // }
       ]
   },
 
@@ -66,14 +66,14 @@ const sidebarItem: menu[] = [
           title: 'Blogs',
           to: '/admin/pages/blogs'
         },
-        {
-          title: 'Category',
-          to: '/admin/pages/category-blog'
-        },
-        {
-          title: 'Tag',
-          to: '/admin/pages/products/fashion'
-        }
+        // {
+        //   title: 'Category',
+        //   to: '/admin/pages/category-blog'
+        // },
+        // {
+        //   title: 'Tag',
+        //   to: '/admin/pages/products/fashion'
+        // }
       ]
   },
   { header: 'E-Commerce' },
@@ -86,14 +86,14 @@ const sidebarItem: menu[] = [
           title: 'Products',
           to: '/admin/ecommerce/products'
         },
-        {
-          title: 'Category',
-          to: '/admin/ecommerce/products/electronics'
-        },
-        {
-          title: 'Tag',
-          to: '/admin/ecommerce/products/fashion'
-        }
+        // {
+        //   title: 'Category',
+        //   to: '/admin/ecommerce/products/electronics'
+        // },
+        // {
+        //   title: 'Tag',
+        //   to: '/admin/ecommerce/products/fashion'
+        // }
       ]
   },
 

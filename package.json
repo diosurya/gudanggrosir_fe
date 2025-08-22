@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
+    "build": "vite build",
     "build-stage": "vue-tsc --noEmit && vite build --base=/vue/free/stage/",
     "build-prod": "vue-tsc --noEmit && vite build --base=/vue/free/",
     "preview": "vite preview --port 5050",

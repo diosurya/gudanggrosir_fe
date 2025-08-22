@@ -1,10 +1,9 @@
 import axios from "axios";
 
+const BASE_URL = "https://be.gudanggrosiran.com/api";
+
 const apiClient = axios.create({
-  baseURL: "http://127.0.0.1:8000/api",
-  headers: {
-    "Content-Type": "application/json",
-  },
+  baseURL: `${BASE_URL}`,
   withCredentials: true, 
 });
 
@@ -24,4 +23,5 @@ apiClient.interceptors.response.use(
   }
 );
 
+export { BASE_URL }; 
 export default apiClient;

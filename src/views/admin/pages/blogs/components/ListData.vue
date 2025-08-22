@@ -5,6 +5,8 @@ import UiTitleCard from "@/components/shared/UiTitleCard.vue"
 import { blogService, type Blog } from "@/api/services/blogService"
 import SkeletonLoader from "@/components/shared/SkeletonLoader.vue"
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons-vue'
+import apiClient, { BASE_URL } from "@/api/axios"
+
 
 const blogs = ref<Blog[]>([])
 const total = ref(0)
@@ -67,15 +69,31 @@ const confirmDelete = async () => {
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'Published': return 'success'
-    case 'Draft': return 'grey'
-    case 'Deactived': return 'error'
+    case 'published': return 'success'
+    case 'draft': return 'grey'
+    case 'deactived': return 'error'
     default: return 'grey'
   }
 }
 
+const getImageUrl = (path: string | null) => {
+  if (!path) return "https://via.placeholder.com/50"
+  return `${BASE_URL}${path.startsWith("/") ? "" : "/"}${path}`
+}
+
 onMounted(fetchBlogs)
 watch([page, searchQuery, startDate, endDate], fetchBlogs)
+
+function getStatusClass(status: string) {
+  switch (status) {
+    case "publish":
+      return "bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs";
+    case "draft":
+      return "bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs";
+    default:
+      return "bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs";
+  }
+}
 </script>
 
 <template>
@@ -114,10 +132,11 @@ watch([page, searchQuery, startDate, endDate], fetchBlogs)
     <v-table v-else class="bordered-table" hover density="comfortable">
       <thead class="bg-containerBg">
         <tr>
-          <th class="text-left">ID</th>
+          <!-- <th class="text-left">ID</th> -->
+          <th class="text-left">image</th>
           <th class="text-left">Title</th>
           <th class="text-left">Excerpt</th>
-          <th class="text-left">Author</th>
+          <!-- <th class="text-left">Author</th> -->
           <th class="text-left">Category</th>
           <th class="text-left">Status</th>
           <th class="text-left w-40">Actions</th>
@@ -125,11 +144,14 @@ watch([page, searchQuery, startDate, endDate], fetchBlogs)
       </thead>
       <tbody>
         <tr v-for="blog in blogs" :key="blog.id">
-          <td class="py-3">{{ blog.id }}</td>
+          <!-- <td class="py-3">{{ blog.id }}</td> -->
+          <td class="py-3">
+            <img :src="getImageUrl(blog.cover_image)" width="50" alt="Image" />
+          </td>
           <td class="py-3">{{ blog.title }}</td>
           <td class="py-3 truncate max-w-[300px]">{{ blog.excerpt }}</td>
-          <td class="py-3">{{ blog.author?.name }}</td>
-          <td class="py-3">{{ blog.category?.name }}</td>
+          <!-- <td class="py-3">{{ blog.author?.name }}</td> -->
+          <td class="py-3">{{ blog.category_name }}</td>
           <!-- Status column -->
           <td class="py-3">
             <v-chip variant="text" size="small" class="px-0">

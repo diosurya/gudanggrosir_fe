@@ -1,38 +1,36 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue"
-import { useRoute, useRouter } from "vue-router"
+import { useRouter } from "vue-router"
 import BaseBreadcrumb from "@/components/shared/BaseBreadcrumb.vue"
 import UiParentCard from "@/components/shared/UiParentCard.vue"
 import SkeletonLoader from "@/components/shared/SkeletonLoader.vue"
 import SelectCategory from "./components/CategorySelect.vue"
 import { blogService, type Blog } from "@/api/services/blogService"
 import apiClient from "@/api/axios"
+import { multipartRequest } from "@/api/multipart"
 
-const route = useRoute()
 const router = useRouter()
-const id = route.params.id as string
 
 const loading = ref(false)
 const saving = ref(false)
-const blog = ref<Partial<Blog>>({})
-const categories = ref<{ id: number; name: string }[]>([])
+const blog = ref<Partial<Blog>>({
+  title: "",
+  slug: "",
+  excerpt: "",
+  content: "",
+  seo_title: "",
+  seo_description: "",
+  seo_keywords: "",
+  category_id: null, // UUID wajib → default null
+  status: "draft"
+})
+
+const categories = ref<{ id: string; name: string }[]>([])
 const categoriesLoading = ref(false)
 
 const previewSrc = ref<string | null>(null)
 
-const fetchBlog = async () => {
-  loading.value = true
-  try {
-    const { data } = await blogService.getById(id)
-    blog.value = data
-    // previewSrc.value = blog.value.image_url || null
-  } catch (err) {
-    console.error("Failed to load blog", err)
-  } finally {
-    loading.value = false
-  }
-}
-
+// ambil list categories
 const fetchCategories = async () => {
   categoriesLoading.value = true
   try {
@@ -46,53 +44,76 @@ const fetchCategories = async () => {
 }
 
 const selectedCategory = computed({
-  get: () => blog.value.category_id ? Number(blog.value.category_id) : null,
-  set: (val: number | null) => {
-    // blog.value.category_id = val
+  get: () => blog.value.category_id,
+  set: (val: string | null) => {
+    blog.value.category_id = val
   }
 })
 
-// Handler untuk ketika category baru ditambahkan
-const onCategoryAdded = (newCategory: { id: number; name: string }) => {
-  // Refresh categories list
+
+
+const onCategoryAdded = (newCategory: { id: string; name: string }) => {
   categories.value.push(newCategory)
-  // Auto-select kategori yang baru dibuat sudah dihandle di komponen SelectCategory
+  blog.value.category_id = newCategory.id
 }
 
-const handleImageUpload = async (e: Event) => {
+const handleImageUpload = (e: Event) => {
   const target = e.target as HTMLInputElement
   if (!target.files?.length) return
   const file = target.files[0]
 
+  // Preview untuk UI
   const reader = new FileReader()
   reader.onload = (ev) => {
     previewSrc.value = ev.target?.result as string
   }
   reader.readAsDataURL(file)
 
-  const formData = new FormData()
-  formData.append("image", file)
-
-  try {
-    const res = await apiClient.post("/upload", formData, {
-      headers: { "Content-Type": "multipart/form-data" }
-    })
-    // blog.value.image_url = res.data.url
-  } catch (err) {
-    console.error("Upload failed", err)
-  }
+  // Simpan file ke blog.images
+  if (!blog.value.images) blog.value.images = []
+  blog.value.images = [{ file, is_cover: true }]
 }
 
 const resetImage = () => {
   previewSrc.value = null
-  // blog.value.image_url = null
+  blog.value.image_url = null
 }
 
 const saveBlog = async () => {
+  if (!blog.value.category_id) {
+    alert("Please select a category before saving")
+    return
+  }
+
   saving.value = true
   try {
-    await blogService.update(id, blog.value)
-    router.push("/admin/pages/blogs")
+    const formData = new FormData()
+
+    console.log(formData)
+
+    // append field text
+    formData.append("title", blog.value.title || "")
+    formData.append("slug", blog.value.slug || "")
+    formData.append("excerpt", blog.value.excerpt || "")
+    formData.append("content", blog.value.content || "")
+    formData.append("seo_title", blog.value.seo_title || "")
+    formData.append("seo_description", blog.value.seo_description || "")
+    formData.append("seo_keywords", blog.value.seo_keywords || "")
+    formData.append("category_id", blog.value.category_id || "")
+    formData.append("status", blog.value.status || "draft")
+
+    if (blog.value.images) {
+      blog.value.images.forEach((img: any) => {
+        if (img.file) {
+          formData.append("images[]", img.file)
+        }
+      })
+    }
+
+  await apiClient.post("/blogs", formData)
+
+  router.push("/admin/pages/blogs")
+  
   } catch (err) {
     console.error("Failed to save blog", err)
   } finally {
@@ -100,21 +121,23 @@ const saveBlog = async () => {
   }
 }
 
+
+
+
 const statusOptions = [
-  { label: 'Draft', value: 'Draft' },
-  { label: 'Published', value: 'Published' },
-  { label: 'Deactived', value: 'Deactived' }
+  { label: "Draft", value: "draft" },
+  { label: "Published", value: "published" },
+  { label: "Deactived", value: "deactived" }
 ]
 
 onMounted(() => {
-  fetchBlog()
   fetchCategories()
 })
 
 const breadcrumbs = computed(() => [
   { title: "Dashboard", disabled: false, href: "/admin/dashboard" },
   { title: "Blogs", disabled: false, href: "/admin/pages/blogs" },
-  { title: blog.value?.title || "Add", disabled: true, href: "#" }
+  { title: "Add Blog", disabled: true, href: "#" }
 ])
 </script>
 

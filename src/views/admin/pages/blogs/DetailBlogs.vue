@@ -6,7 +6,9 @@ import UiParentCard from "@/components/shared/UiParentCard.vue"
 import SkeletonLoader from "@/components/shared/SkeletonLoader.vue"
 import SelectCategory from "./components/CategorySelect.vue"
 import { blogService, type Blog } from "@/api/services/blogService"
-import apiClient from "@/api/axios"
+import apiClient, { BASE_URL } from "@/api/axios"
+import { multipartRequest } from "@/api/multipart"
+
 
 const route = useRoute()
 const router = useRouter()
@@ -14,8 +16,22 @@ const id = route.params.id as string
 
 const loading = ref(false)
 const saving = ref(false)
-const blog = ref<Partial<Blog>>({})
-const categories = ref<{ id: number; name: string }[]>([])
+const blog = ref<Partial<Blog>>({
+  title: "",
+  slug: "",
+  excerpt: "",
+  content: "",
+  seo_title: "",
+  seo_description: "",
+  seo_keywords: "",
+  meta_title: "",
+  meta_description: "",
+  meta_keywords: "",
+  // category_id: null,
+  status: "draft",
+  image_url: null
+})
+const categories = ref<{ id: string; name: string }[]>([])
 const categoriesLoading = ref(false)
 
 const previewSrc = ref<string | null>(null)
@@ -23,9 +39,40 @@ const previewSrc = ref<string | null>(null)
 const fetchBlog = async () => {
   loading.value = true
   try {
-    const { data } = await blogService.getById(id)
-    blog.value = data
-    // previewSrc.value = blog.value.image_url || null
+    console.log("Fetching blog with ID:", id)
+    const response = await blogService.getById(id)
+    console.log("Blog response:", response)
+    
+    // FIX: Pastikan mapping data sesuai dengan response structure
+    if (response.data && response.data.data) {
+      const blogData = response.data.data
+      
+      // Map semua field yang ada di response
+      blog.value = {
+        id: blogData.id,
+        title: blogData.title || "",
+        slug: blogData.slug || "",
+        excerpt: blogData.excerpt || "",
+        content: blogData.content || "",
+        // FIX: Map field SEO dari response (gunakan meta_* bukan seo_*)
+        meta_title: blogData.meta_title || "",
+        meta_description: blogData.meta_description || "",
+        meta_keywords: blogData.meta_keywords || "",
+        category_id: blogData.category_id || null,
+        status: blogData.status || "draft",
+        image_url: blogData.image_url || null,
+        images: blogData.images || []
+      }
+      
+      // Set preview image dari existing image_url
+        previewSrc.value = blogData.image_url 
+        ? `${BASE_URL}${blogData.image_url}` 
+        : null
+      
+      console.log("Mapped blog data:", blog.value)
+    } else {
+      console.error("Unexpected response structure:", response)
+    }
   } catch (err) {
     console.error("Failed to load blog", err)
   } finally {
@@ -37,7 +84,8 @@ const fetchCategories = async () => {
   categoriesLoading.value = true
   try {
     const res = await apiClient.get("/categories")
-    categories.value = res.data.data
+    categories.value = res.data.data || []
+    console.log("Categories loaded:", categories.value)
   } catch (err) {
     console.error("Failed to load categories", err)
   } finally {
@@ -46,52 +94,74 @@ const fetchCategories = async () => {
 }
 
 const selectedCategory = computed({
-  get: () => blog.value.category_id ? Number(blog.value.category_id) : null,
-  set: (val: number | null) => {
-    // blog.value.category_id = val
+  get: () => blog.value.category_id,
+  set: (val: string | null) => {
+    blog.value.category_id = val
   }
 })
 
 // Handler untuk ketika category baru ditambahkan
-const onCategoryAdded = (newCategory: { id: number; name: string }) => {
-  // Refresh categories list
+const onCategoryAdded = (newCategory: { id: string; name: string }) => {
   categories.value.push(newCategory)
-  // Auto-select kategori yang baru dibuat sudah dihandle di komponen SelectCategory
+  blog.value.category_id = newCategory.id
 }
 
-const handleImageUpload = async (e: Event) => {
+const handleImageUpload = (e: Event) => {
   const target = e.target as HTMLInputElement
   if (!target.files?.length) return
   const file = target.files[0]
 
+  // Preview untuk UI
   const reader = new FileReader()
   reader.onload = (ev) => {
     previewSrc.value = ev.target?.result as string
   }
   reader.readAsDataURL(file)
 
-  const formData = new FormData()
-  formData.append("image", file)
-
-  try {
-    const res = await apiClient.post("/upload", formData, {
-      headers: { "Content-Type": "multipart/form-data" }
-    })
-    // blog.value.image_url = res.data.url
-  } catch (err) {
-    console.error("Upload failed", err)
-  }
+  // Simpan file ke blog.images
+  if (!blog.value.images) blog.value.images = []
+  blog.value.images = [{ file, is_cover: true }]
 }
 
 const resetImage = () => {
   previewSrc.value = null
-  // blog.value.image_url = null
+  blog.value.image_url = null
+  blog.value.images = [] // Clear images array
 }
 
 const saveBlog = async () => {
+  if (!blog.value.category_id) {
+    alert("Please select a category before saving")
+    return
+  }
+
   saving.value = true
   try {
-    await blogService.update(id, blog.value)
+    const formData = new FormData()
+
+    formData.append("title", blog.value.title || "")
+    formData.append("slug", blog.value.slug || "")
+    formData.append("excerpt", blog.value.excerpt || "")
+    formData.append("content", blog.value.content || "")
+    formData.append("meta_title", blog.value.seo_title || "")
+    formData.append("meta_description", blog.value.seo_description || "")
+    formData.append("meta_keywords", blog.value.seo_keywords || "")
+    formData.append("category_id", blog.value.category_id || "")
+    formData.append("status", blog.value.status || "draft")
+    formData.append("_method", "PUT")
+
+    if (blog.value.images && blog.value.images.length > 0) {
+      blog.value.images.forEach((img: any) => {
+        if (img.file) {
+          formData.append("images[]", img.file)
+        }
+      })
+    }
+
+    console.log("Sebelum save data yang dikirim:", formData)
+    const response = await apiClient.post(`/blogs/${id}`, formData)
+    console.log("Update response:", response)
+
     router.push("/admin/pages/blogs")
   } catch (err) {
     console.error("Failed to save blog", err)
@@ -101,9 +171,9 @@ const saveBlog = async () => {
 }
 
 const statusOptions = [
-  { label: 'Draft', value: 'Draft' },
-  { label: 'Published', value: 'Published' },
-  { label: 'Deactived', value: 'Deactived' }
+  { label: "Draft", value: "draft" },
+  { label: "Published", value: "published" },
+  { label: "Deactived", value: "deactived" }
 ]
 
 onMounted(() => {
@@ -119,7 +189,7 @@ const breadcrumbs = computed(() => [
 </script>
 
 <template>
-  <BaseBreadcrumb :title="blog.title" :breadcrumbs="breadcrumbs" />
+  <BaseBreadcrumb :title="blog.title || 'Detail Blog'" :breadcrumbs="breadcrumbs" />
 
   <v-row>
     <!-- Main Form -->
@@ -134,25 +204,48 @@ const breadcrumbs = computed(() => [
             <!-- Title -->
             <v-col cols="12" class="mb-1">
               <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
-              <v-text-field v-model="blog.title" variant="outlined" density="compact" hide-details />
+              <v-text-field 
+                v-model="blog.title" 
+                variant="outlined" 
+                density="compact" 
+                hide-details 
+                placeholder="Enter blog title"
+              />
             </v-col>
 
             <!-- Slug -->
             <v-col cols="12" class="mb-1">
               <label class="block text-sm font-medium text-gray-700 mb-1">Slug</label>
-              <v-text-field v-model="blog.slug" variant="outlined" density="compact" hide-details />
+              <v-text-field 
+                v-model="blog.slug" 
+                variant="outlined" 
+                density="compact" 
+                hide-details 
+                placeholder="Enter blog slug"
+              />
             </v-col>
 
             <!-- Excerpt -->
             <v-col cols="12" class="mb-1">
               <label class="block text-sm font-medium text-gray-700 mb-1">Excerpt</label>
-              <v-textarea v-model="blog.excerpt" variant="outlined" rows="2" density="compact" />
+              <v-textarea 
+                v-model="blog.excerpt" 
+                variant="outlined" 
+                rows="2" 
+                density="compact" 
+                placeholder="Enter blog excerpt"
+              />
             </v-col>
 
             <!-- Content -->
             <v-col cols="12" class="mb-4">
               <label class="block text-sm font-medium text-gray-700 mb-1">Content</label>
-              <v-textarea v-model="blog.content" rows="8" density="compact" />
+              <v-textarea 
+                v-model="blog.content" 
+                rows="8" 
+                density="compact" 
+                placeholder="Enter blog content"
+              />
             </v-col>
 
             <!-- SEO Settings -->
@@ -161,24 +254,46 @@ const breadcrumbs = computed(() => [
             </v-col>
 
             <v-col cols="12" class="mb-1">
-              <label class="block text-sm font-medium text-gray-700 mb-1">SEO Title</label>
-              <v-text-field v-model="blog.seo_title" variant="outlined" density="compact" hide-details />
+              <label class="block text-sm font-medium text-gray-700 mb-1">Meta Title</label>
+              <v-text-field 
+                v-model="blog.meta_title" 
+                variant="outlined" 
+                density="compact" 
+                hide-details 
+                placeholder="Enter Meta title"
+              />
             </v-col>
 
             <v-col cols="12" class="mb-1">
-              <label class="block text-sm font-medium text-gray-700 mb-1">SEO Keywords</label>
-              <v-textarea v-model="blog.seo_keywords" variant="outlined" rows="2" density="compact" />
+              <label class="block text-sm font-medium text-gray-700 mb-1">Meta Keywords</label>
+              <v-textarea 
+                v-model="blog.meta_keywords" 
+                variant="outlined" 
+                rows="2" 
+                density="compact" 
+                placeholder="Enter Meta Keywords"
+              />
             </v-col>
 
             <v-col cols="12" class="mb-1">
-              <label class="block text-sm font-medium text-gray-700 mb-1">SEO Description</label>
-              <v-textarea v-model="blog.seo_description" variant="outlined" rows="2" density="compact" />
+              <label class="block text-sm font-medium text-gray-700 mb-1">Meta Description</label>
+              <v-textarea 
+                v-model="blog.meta_description" 
+                variant="outlined" 
+                rows="2" 
+                density="compact" 
+                placeholder="Enter Meta Description"
+              />
             </v-col>
 
             <!-- Save / Cancel -->
             <v-col cols="12" class="flex gap-3">
-              <v-btn class="mr-2" color="primary" @click="saveBlog" :loading="saving">Save</v-btn>
-              <v-btn color="secondary" @click="router.push('/admin/pages/blogs')">Cancel</v-btn>
+              <v-btn class="mr-2" color="primary" @click="saveBlog" :loading="saving">
+                Update Blog
+              </v-btn>
+              <v-btn color="secondary" @click="router.push('/admin/pages/blogs')">
+                Cancel
+              </v-btn>
             </v-col>
           </v-row>
         </template>
@@ -190,60 +305,96 @@ const breadcrumbs = computed(() => [
       <!-- Status -->
       <UiParentCard :title="'Publish'" class="mb-3">
         <template v-if="loading">
-          <SkeletonLoader type="card" :rows="5" />
+          <SkeletonLoader type="card" :rows="3" />
         </template>
-        <v-row>
-          <v-col cols="12" class="mb-1">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-            <v-select
-              :items="statusOptions"
-              item-title="label"
-              item-value="value"
-              v-model="blog.status"
-              variant="outlined"
-              density="compact"
-            />
-          </v-col>
-        </v-row>
+        <template v-else>
+          <v-row>
+            <v-col cols="12" class="mb-1">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+              <v-select
+                :items="statusOptions"
+                item-title="label"
+                item-value="value"
+                v-model="blog.status"
+                variant="outlined"
+                density="compact"
+              />
+            </v-col>
+          </v-row>
+        </template>
       </UiParentCard>
 
-      <!-- Category - Menggunakan SelectCategory component -->
+      <!-- Category -->
       <UiParentCard :title="'Category'" class="mb-3">
         <template v-if="loading">
-          <SkeletonLoader type="card" :rows="5" />
+          <SkeletonLoader type="card" :rows="3" />
         </template>
-        <v-row>
-          <v-col cols="12" class="mb-1">
-            <SelectCategory 
-              v-model="selectedCategory"
-              :categories="categories"
-              :loading="categoriesLoading"
-              @category-added="onCategoryAdded"
-            />
-          </v-col>
-        </v-row>
+        <template v-else>
+          <v-row>
+            <v-col cols="12" class="mb-1">
+              <SelectCategory 
+                v-model="selectedCategory"
+                :categories="categories"
+                :loading="categoriesLoading"
+                @category-added="onCategoryAdded"
+              />
+            </v-col>
+          </v-row>
+        </template>
       </UiParentCard>
 
       <!-- Feature Image -->
       <UiParentCard :title="'Feature Image'">
         <template v-if="loading">
-          <SkeletonLoader type="card" :rows="5" />
+          <SkeletonLoader type="card" :rows="3" />
         </template>
-        <v-row>
-          <v-col cols="12" class="mb-4">
-            <div class="flex flex-col items-center gap-4">
-              <img
-                v-if="previewSrc"
-                :src="previewSrc"
-                alt="Preview Image"
-                class="shadow-md rounded-xl w-full sm:w-64"
-                style="filter: grayscale(100%)"
-              />
-              <input class="m-2 mb-2 btn btn-primary" type="file" @change="handleImageUpload" />
-              <v-btn v-if="previewSrc" color="error" size="small" @click="resetImage">Remove</v-btn>
-            </div>
-          </v-col>
-        </v-row>
+        <template v-else>
+          <v-row>
+            <v-col cols="12" class="mb-4">
+              <div class="flex flex-col items-center gap-4">
+                <div v-if="previewSrc" class="relative">
+                  <img
+                    :src="previewSrc"
+                    alt="Preview Image"
+                    class="previewSrc"
+                  />
+                  <v-chip 
+                    class="absolute top-2 right-2" 
+                    color="success" 
+                    size="small"
+                  >
+                    Current Image
+                  </v-chip>
+                </div>
+                <div v-else class="w-full max-w-64 h-40 bg-gray-100 rounded-xl flex items-center justify-center">
+                  <span class="text-gray-500">No image selected</span>
+                </div>
+                
+                <input 
+                  class="w-full" 
+                  type="file" 
+                  accept="image/*"
+                  @change="handleImageUpload" 
+                />
+                
+                <v-btn 
+                  v-if="previewSrc" 
+                  color="error" 
+                  size="small" 
+                  @click="resetImage"
+                  variant="outlined"
+                >
+                  Remove Image
+                </v-btn>
+              </div>
+            </v-col>
+          </v-row>
+        </template>
+      </UiParentCard>
+
+      <!-- Debug Info (Remove in production) -->
+      <UiParentCard title="Debug Info" class="mb-3" v-if="!loading">
+        <pre class="text-xs">{{ JSON.stringify(blog, null, 2) }}</pre>
       </UiParentCard>
     </v-col>
   </v-row>
