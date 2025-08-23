@@ -111,21 +111,21 @@ const sidebarItem: menu[] = [
     to: '/admin/pages/settings'
   },
 
-  { header: 'Support' },
-  {
-    title: 'Ant Icons',
-    icon: CrownOutlined,
-    to: '/admin/icon/ant'
-  },
-  {
-    title: 'Documentation',
-    icon: QuestionOutlined,
-    to: 'https://codedthemes.gitbook.io/mantis-vuetify/',
-    type: 'external',
-    chip: 'gitbook',
-    chipColor: 'secondary',
-    chipVariant: 'flat'
-  }
+  // { header: 'Support' },
+  // {
+  //   title: 'Ant Icons',
+  //   icon: CrownOutlined,
+  //   to: '/admin/icon/ant'
+  // },
+  // {
+  //   title: 'Documentation',
+  //   icon: QuestionOutlined,
+  //   to: 'https://codedthemes.gitbook.io/mantis-vuetify/',
+  //   type: 'external',
+  //   chip: 'gitbook',
+  //   chipColor: 'secondary',
+  //   chipVariant: 'flat'
+  // }
 ];
 
 export default sidebarItem;
