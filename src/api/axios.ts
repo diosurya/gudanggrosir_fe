@@ -1,10 +1,10 @@
 import axios from "axios";
 
-// const BASE_URL = "https://be.gudanggrosiran.com/api";
-const BASE_URL = "http://127.0.0.1:8000/api";
+// const BASE_URL = "https://be.gudanggrosiran.com";
+const BASE_URL = "http://127.0.0.1:8000";
 
 const apiClient = axios.create({
-  baseURL: `${BASE_URL}`,
+  baseURL: `${BASE_URL}/api`,
   withCredentials: true, 
 });
 

@@ -97,6 +97,13 @@ const sidebarItem: menu[] = [
       ]
   },
 
+  { header: 'Media' },
+  {
+    title: 'Media',
+    icon: SettingOutlined,
+    to: '/admin/pages/media'
+  },
+
   { header: 'Settings' },
   {
     title: 'Settings',

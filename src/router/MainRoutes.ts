@@ -22,6 +22,13 @@ const MainRoutes = {
       meta: { title: 'Pages About - Gudang Grosiran' },
       component: () => import('@/views/admin/pages/about/About.vue')
     },
+
+     {
+      name: 'Media',
+      path: 'pages/media',
+      meta: { title: 'Media Page - Gudang Grosiran' },
+      component: () => import('@/views/admin/pages/media/MediaGallery.vue')
+    },
     {
       name: 'Settings Pages About',
       path: 'pages/settings',
