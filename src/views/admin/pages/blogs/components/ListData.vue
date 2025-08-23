@@ -32,17 +32,18 @@ const fetchBlogs = async () => {
       end_date: endDate.value || undefined
     })
 
-    console.log("Response Blogs:", res)
-
-    blogs.value = res.data.data  
-    total.value = res.data.total
-    perPage.value = res.data.per_page
+    blogs.value = res.data
+    total.value = res.pagination.total
+    perPage.value = res.pagination.per_page
+    page.value = res.pagination.current_page
   } catch (err) {
     console.error("Failed to fetch blogs:", err)
   } finally {
     loading.value = false
   }
 }
+
+
 
 const handleEdit = (id: number) => {
   router.push(`/admin/pages/blogs/${id}`)
@@ -146,7 +147,7 @@ function getStatusClass(status: string) {
         <tr v-for="blog in blogs" :key="blog.id">
           <!-- <td class="py-3">{{ blog.id }}</td> -->
           <td class="py-3">
-            <img :src="getImageUrl(blog.cover_image)" width="50" alt="Image" />
+            <img :src="getImageUrl(blog.cover_image ?? null)" width="50" alt="Image" />
           </td>
           <td class="py-3">{{ blog.title }}</td>
           <td class="py-3 truncate max-w-[300px]">{{ blog.excerpt }}</td>
@@ -206,7 +207,7 @@ function getStatusClass(status: string) {
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn text @click="confirmDialog = false">Cancel</v-btn>
+          <v-btn @click="confirmDialog = false">Cancel</v-btn>
           <v-btn color="error" @click="confirmDelete">Yes, Delete</v-btn>
         </v-card-actions>
       </v-card>

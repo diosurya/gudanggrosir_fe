@@ -42,17 +42,24 @@ export interface Blog {
   };
 }
 
+
+export interface Pagination {
+  current_page: number
+  per_page: number
+  total: number
+  last_page: number
+}
+
 export interface PaginatedResponse<T> {
-  current_page: number;
-  data: T[];
-  total: number;
-  per_page: number;
-  last_page: number;
+  success: boolean
+  data: T[]
+  pagination: Pagination
 }
 
 export const blogService = {
-  async getAll(params?: any) {
-    return apiClient.get<PaginatedResponse<Blog>>(API_ENDPOINTS.blogs, { params });
+  getAll(params?: any): Promise<PaginatedResponse<Blog>> {
+    return apiClient.get<PaginatedResponse<Blog>>("/blogs", { params })
+      .then(res => res.data)
   },
 
   async getById(id: number | string) {

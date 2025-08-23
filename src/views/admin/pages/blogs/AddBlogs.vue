@@ -7,7 +7,7 @@ import SkeletonLoader from "@/components/shared/SkeletonLoader.vue"
 import SelectCategory from "./components/CategorySelect.vue"
 import { blogService, type Blog } from "@/api/services/blogService"
 import apiClient from "@/api/axios"
-import { multipartRequest } from "@/api/multipart"
+import { multipartRequest } from "@/api/multipartRequest"
 
 const router = useRouter()
 
@@ -21,7 +21,7 @@ const blog = ref<Partial<Blog>>({
   seo_title: "",
   seo_description: "",
   seo_keywords: "",
-  category_id: null, // UUID wajib → default null
+  category_id: null,
   status: "draft"
 })
 
@@ -110,7 +110,9 @@ const saveBlog = async () => {
       })
     }
 
-  await apiClient.post("/blogs", formData)
+  const response = await multipartRequest("post", `/blogs`, formData)
+
+  console.log("Data Sudah DIkirim =>", response)
 
   router.push("/admin/pages/blogs")
   

@@ -7,7 +7,7 @@ import SkeletonLoader from "@/components/shared/SkeletonLoader.vue"
 import SelectCategory from "./components/CategorySelect.vue"
 import { blogService, type Blog } from "@/api/services/blogService"
 import apiClient, { BASE_URL } from "@/api/axios"
-import { multipartRequest } from "@/api/multipart"
+import { multipartRequest } from "@/api/multipartRequest"
 
 
 const route = useRoute()
@@ -126,7 +126,7 @@ const handleImageUpload = (e: Event) => {
 const resetImage = () => {
   previewSrc.value = null
   blog.value.image_url = null
-  blog.value.images = [] // Clear images array
+  blog.value.images = []
 }
 
 const saveBlog = async () => {
@@ -143,9 +143,9 @@ const saveBlog = async () => {
     formData.append("slug", blog.value.slug || "")
     formData.append("excerpt", blog.value.excerpt || "")
     formData.append("content", blog.value.content || "")
-    formData.append("meta_title", blog.value.seo_title || "")
-    formData.append("meta_description", blog.value.seo_description || "")
-    formData.append("meta_keywords", blog.value.seo_keywords || "")
+    formData.append("meta_title", blog.value.meta_title || "")
+    formData.append("meta_description", blog.value.meta_description || "")
+    formData.append("meta_keywords", blog.value.meta_keywords || "")
     formData.append("category_id", blog.value.category_id || "")
     formData.append("status", blog.value.status || "draft")
     formData.append("_method", "PUT")
@@ -159,7 +159,7 @@ const saveBlog = async () => {
     }
 
     console.log("Sebelum save data yang dikirim:", formData)
-    const response = await apiClient.post(`/blogs/${id}`, formData)
+    const response = await multipartRequest("post", `/blogs/${id}`, formData)
     console.log("Update response:", response)
 
     router.push("/admin/pages/blogs")
