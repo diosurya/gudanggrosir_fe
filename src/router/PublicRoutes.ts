@@ -1,14 +1,14 @@
 
 const PublicRoutes = {
   path: '/',
-  component: () => import('@/layouts/blank/BlankLayout.vue'), // layout kosong
+  component: () => import('@/layouts/blank/BlankLayout.vue'),
   meta: { requiresAuth: false },
   children: [
     {
-      name: 'Landing',
+      name: 'Home',
       path: '',
-      meta: { slug: 'Home' },
-      component: () => import('@/views/landing/LandingPage.vue')
+      meta: { slug: 'Login' },
+      component: () => import('@/views/authentication/LoginPage.vue')
     },
     {
       name: 'Login',
