@@ -17,13 +17,28 @@ const MainRoutes = {
     //   component: () => import('@/views/admin/seo/SeoManager.vue')
     // },
     {
+      name: 'Pages',
+      path: 'pages',
+      meta: { title: 'Pages - Gudang Grosiran' },
+      component: () => import('@/views/admin/pages/halaman/Halaman.vue')
+    },
+    {
+      name: 'PageAdd',
+      path: '/admin/pages/add',
+      component: () => import('@/views/admin/pages/halaman/Form.vue'),
+    },
+    {
+      name: 'PageEdit',
+      path: '/admin/pages/:id',
+      component: () => import('@/views/admin/pages/halaman/Form.vue'),
+    },
+    {
       name: 'About',
       path: 'pages/about',
       meta: { title: 'Pages About - Gudang Grosiran' },
       component: () => import('@/views/admin/pages/about/About.vue')
     },
-
-     {
+    {
       name: 'Media',
       path: 'pages/media',
       meta: { title: 'Media Page - Gudang Grosiran' },

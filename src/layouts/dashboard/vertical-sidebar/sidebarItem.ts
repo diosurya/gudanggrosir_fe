@@ -35,25 +35,15 @@ const sidebarItem: menu[] = [
     icon: DashboardOutlined,
     to: '/admin/dashboard'
   },
-  { header: 'Pages' },
+  {
+    title: 'Beranda',
+    icon: DashboardOutlined,
+    to: '/admin/pages/beranda'
+  },
   {
     title: 'Pages',
-    icon: LoginOutlined,
-    to: '/admin/pages/beranda',
-    children: [
-        {
-          title: 'Beranda',
-          to: '/admin/pages/beranda'
-        },
-        {
-          title: 'About',
-          to: '/admin/pages/about'
-        },
-        // {
-        //   title: 'Tag',
-        //   to: '/admin/pages/products/fashion'
-        // }
-      ]
+    icon: DashboardOutlined,
+    to: '/admin/pages'
   },
 
   { header: 'Posts' },
