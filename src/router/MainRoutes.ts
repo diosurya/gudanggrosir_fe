@@ -60,7 +60,7 @@ const MainRoutes = {
       name: 'Blog Detail',
       path: 'pages/blogs/:id',
       meta: { title: 'Blog Detail - Gudang Grosiran' },
-      component: () => import('@/views/admin/pages/blogs/DetailBlogs.vue'),
+      component: () => import('@/views/admin/pages/blogs/AddBlogs.vue'),
       props: true
     },
     {

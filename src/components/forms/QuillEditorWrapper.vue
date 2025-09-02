@@ -163,75 +163,79 @@ defineExpose({
 <style scoped>
 .quill-wrapper {
   width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  background-color: white;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
 }
 
-/* Customize Quill to match Vuetify */
+/* Toolbar */
 :deep(.ql-toolbar) {
-  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
-  border-bottom: none;
-  border-radius: 4px 4px 0 0;
-  background: rgb(var(--v-theme-surface));
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px 8px 0 0;
+  background: #f9f9f9;
+  padding: 8px;
 }
 
+/* Editor container */
 :deep(.ql-container) {
-  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
-  border-radius: 0 0 4px 4px;
-  font-family: inherit;
-  background: rgb(var(--v-theme-surface));
-}
-
-:deep(.ql-editor) {
+  border: none;
+  border-radius: 0 0 8px 8px;
   min-height: 300px;
-  max-height: 500px;
-  overflow-y: auto;
-  line-height: 1.6;
-  color: rgb(var(--v-theme-on-surface));
+  max-height: 600px;
+  background-color: white;
+  padding: 16px;
+  font-family: inherit;
   font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+  overflow-y: auto;
 }
 
+/* Placeholder */
 :deep(.ql-editor.ql-blank::before) {
   font-style: normal;
-  color: rgba(var(--v-theme-on-surface), 0.6);
-  left: 15px;
-  right: 15px;
+  color: #bbb;
+  left: 16px;
 }
 
-/* Focus styles to match Vuetify */
-.quill-wrapper:focus-within :deep(.ql-toolbar),
-.quill-wrapper:focus-within :deep(.ql-container) {
-  border-color: rgb(var(--v-theme-primary));
-}
-
-.quill-wrapper:focus-within :deep(.ql-container) {
-  box-shadow: 0 0 0 2px rgba(var(--v-theme-primary), 0.2);
+/* Focus ring */
+.quill-wrapper:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
 /* Disabled state */
-:deep(.ql-container.ql-disabled) {
-  background-color: rgba(var(--v-theme-on-surface), 0.04);
-}
-
+:deep(.ql-container.ql-disabled),
 :deep(.ql-toolbar.ql-disabled) {
-  background-color: rgba(var(--v-theme-on-surface), 0.04);
+  background-color: #f5f5f5;
+  opacity: 0.6;
+  pointer-events: none;
 }
 
-/* Dark theme adjustments */
-:deep(.v-theme--dark .ql-snow .ql-stroke) {
-  stroke: rgba(var(--v-theme-on-surface), 0.7);
+/* Hover toolbar buttons */
+:deep(.ql-toolbar .ql-formats button:hover),
+:deep(.ql-toolbar .ql-picker-label:hover) {
+  background-color: rgba(59, 130, 246, 0.08);
+  border-radius: 4px;
 }
 
-:deep(.v-theme--dark .ql-snow .ql-fill) {
-  fill: rgba(var(--v-theme-on-surface), 0.7);
+/* Smooth transitions */
+:deep(.ql-container),
+:deep(.ql-toolbar),
+.quill-wrapper {
+  transition: all 0.2s ease;
 }
 
-:deep(.v-theme--dark .ql-snow .ql-picker) {
-  color: rgba(var(--v-theme-on-surface), 0.7);
+/* global.css atau app.scss */
+.elevated-editor {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
 }
 
-/* Custom button hover effects */
-:deep(.ql-toolbar .ql-formats .ql-picker-label:hover),
-:deep(.ql-toolbar .ql-formats button:hover) {
-  background-color: rgba(var(--v-theme-primary), 0.1);
-  border-radius: 3px;
-}
 </style>
