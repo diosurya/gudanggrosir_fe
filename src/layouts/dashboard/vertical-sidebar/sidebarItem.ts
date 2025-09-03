@@ -47,45 +47,17 @@ const sidebarItem: menu[] = [
     to: '/admin/pages'
   },
 
-  { header: 'Posts' },
+  { header: 'Article' },
   {
     title: 'Blogs',
     icon: FormOutlined,
     to: '/admin/pages/blogs',
-    children: [
-        {
-          title: 'Blogs',
-          to: '/admin/pages/blogs'
-        },
-        // {
-        //   title: 'Category',
-        //   to: '/admin/pages/category-blog'
-        // },
-        // {
-        //   title: 'Tag',
-        //   to: '/admin/pages/products/fashion'
-        // }
-      ]
   },
   { header: 'E-Commerce' },
   {
     title: 'Products',
     icon: ShoppingOutlined,
     to: '/admin/ecommerce/products',
-      children: [
-        {
-          title: 'Products',
-          to: '/admin/ecommerce/products'
-        },
-        // {
-        //   title: 'Category',
-        //   to: '/admin/ecommerce/products/electronics'
-        // },
-        // {
-        //   title: 'Tag',
-        //   to: '/admin/ecommerce/products/fashion'
-        // }
-      ]
   },
 
   { header: 'Media' },

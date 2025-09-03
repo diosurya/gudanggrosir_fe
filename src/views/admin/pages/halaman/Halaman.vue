@@ -24,7 +24,7 @@ const goToAdd = () => {
       <UiParentCard title="Page Management">
          <template #action>
           <v-btn color="primary" @click="goToAdd">
-            + Add Page
+            Add Data
           </v-btn>
         </template>
         <PageList />

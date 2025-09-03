@@ -102,7 +102,7 @@ watch([page, searchQuery, statusFilter], fetchPages)
 
 <template>
   <!-- Filters -->
-  <v-row>
+  <v-row class="mb-4">
     <v-col cols="12" md="6">
       <v-text-field
         v-model="searchQuery"

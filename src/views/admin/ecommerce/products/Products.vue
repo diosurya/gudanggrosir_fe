@@ -23,7 +23,7 @@ const goToAdd = () => {
       <UiParentCard title="Product Management">
         <template #action>
           <v-btn color="primary" @click="goToAdd">
-            + Add Product
+            Add Data
           </v-btn>
         </template>
 

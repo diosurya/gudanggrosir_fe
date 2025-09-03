@@ -12,7 +12,7 @@
     />
     
     <v-btn color="primary" @click="openAddDialog">
-      Tambah Kategori
+      Add Category
     </v-btn>
 
     <!-- Add Category Dialog -->

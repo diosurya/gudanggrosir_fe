@@ -7,17 +7,17 @@ export interface User {
   username: string;
   email: string;
   name?: string;
-  roles?: string[]; 
+  roles?: string[];
 }
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     user: null as User | null,
-    token: localStorage.getItem("token") || null,
+    token: localStorage.getItem("token") as string | null,
     returnUrl: null as string | null,
   }),
   getters: {
-    isLoggedIn: (state) => !!state.token,
+    isLoggedIn: (state) => !!state.token && !!state.user,
     isAdmin: (state) => state.user?.roles?.includes("admin") || false,
   },
   actions: {
@@ -44,15 +44,13 @@ export const useAuthStore = defineStore("auth", {
         this.user = user;
         this.token = token;
 
-        // simpan ke localStorage
         localStorage.setItem("user", JSON.stringify(user));
         localStorage.setItem("token", token);
 
-        // redirect
         router.push(this.returnUrl || "/admin/dashboard");
       } catch (error: any) {
         console.error("Login failed:", error);
-        throw error.response?.data?.message || "Login gagal";
+        throw new Error(error.response?.data?.message || "Login gagal");
       }
     },
 
@@ -60,7 +58,7 @@ export const useAuthStore = defineStore("auth", {
       try {
         if (this.token) {
           await apiClient.post(
-            '/auth/logout',
+            "/auth/logout",
             {},
             {
               headers: {
@@ -70,16 +68,15 @@ export const useAuthStore = defineStore("auth", {
           );
         }
       } catch (error) {
-        console.warn('Logout API error, forcing client logout');
+        console.warn("Logout API error, forcing client logout");
       } finally {
         this.user = null;
         this.token = null;
         this.returnUrl = null;
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
-        router.push('/login');
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        router.push("/login");
       }
-    }
-
+    },
   },
 });

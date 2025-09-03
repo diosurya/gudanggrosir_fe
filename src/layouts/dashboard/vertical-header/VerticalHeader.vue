@@ -9,6 +9,30 @@ import Searchbar from './SearchBarPanel.vue';
 import ProfileDD from './ProfileDD.vue';
 
 const customizer = useCustomizerStore();
+
+import { useAuthStore } from '@/stores/auth';
+import { ref, computed } from 'vue';
+
+
+const tab = ref(null)
+const authStore = useAuthStore()
+
+// 🔥 ambil user dari localStorage
+const user = ref<{ name?: string; email?: string } | null>(null)
+
+const storedUser = localStorage.getItem("user")
+if (storedUser) {
+  try {
+    user.value = JSON.parse(storedUser)
+  } catch (e) {
+    console.error("Invalid user JSON", e)
+  }
+}
+
+// fallback kalau kosong
+const userName = computed(() => user.value?.name || "Guest")
+const userEmail = computed(() => user.value?.email || "")
+
 </script>
 
 <template>
@@ -90,7 +114,7 @@ const customizer = useCustomizerStore();
             <v-avatar class="mr-sm-2 mr-0 py-2">
               <img src="@/assets/images/users/avatar-1.png" alt="Julia" />
             </v-avatar>
-            <h6 class="text-subtitle-1 mb-0 d-sm-block d-none">Superadmin</h6>
+            <h6 class="text-subtitle-1 mb-0 d-sm-block d-none">{{ userName }}</h6>
           </div>
         </v-btn>
       </template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 // icons
 import {
   LogoutOutlined,
@@ -15,8 +15,25 @@ import {
 } from '@ant-design/icons-vue';
 import { useAuthStore } from '@/stores/auth';
 
-const tab = ref(null);
-const authStore = useAuthStore();
+const tab = ref(null)
+const authStore = useAuthStore()
+
+// 🔥 ambil user dari localStorage
+const user = ref<{ name?: string; email?: string } | null>(null)
+
+const storedUser = localStorage.getItem("user")
+if (storedUser) {
+  try {
+    user.value = JSON.parse(storedUser)
+  } catch (e) {
+    console.error("Invalid user JSON", e)
+  }
+}
+
+// fallback kalau kosong
+const userName = computed(() => user.value?.name || "Guest")
+const userEmail = computed(() => user.value?.email || "")
+
 </script>
 
 <template>
@@ -29,8 +46,8 @@ const authStore = useAuthStore();
         <img src="@/assets/images/users/avatar-1.png" width="32" alt="Julia" />
       </v-avatar>
       <div>
-        <h6 class="text-h6 mb-0">Superadmin</h6>
-        <p class="text-caption mb-0">UI/UX Designer</p>
+        <h6 class="text-h6 mb-0">{{ userName }}</h6>
+        <p class="text-caption mb-0">{{ userEmail }}</p>
       </div>
       <div class="ml-auto">
         <v-btn variant="text" color="primary" rounded="sm" icon size="large" @click="authStore.logout()">

@@ -485,23 +485,20 @@ const breadcrumbs = computed(() => [
             </v-col>
 
             <!-- Action Buttons -->
-            <v-col cols="12" class="flex gap-3">
-              <v-btn 
+            <v-col cols="12" class="flex mb-3 gap-3">
+              <v-btn
+                class="me-2"
                 color="primary" 
                 @click="savePage" 
                 :loading="saving"
-                size="large"
               >
-                <v-icon start>mdi-content-save</v-icon>
-                {{ isEdit ? 'Update Page' : 'Create Page' }}
+                {{ isEdit ? 'Update' : 'Create' }}
               </v-btn>
               <v-btn 
                 color="secondary" 
                 variant="outlined"
                 @click="router.push('/admin/pages')"
-                size="large"
               >
-                <v-icon start>mdi-cancel</v-icon>
                 Cancel
               </v-btn>
             </v-col>
@@ -610,8 +607,8 @@ const breadcrumbs = computed(() => [
             <h4 class="text-blue-600 text-lg hover:underline cursor-pointer">
               {{ page.meta_title || page.title || 'Page Title' }}
             </h4>
-            <p class="text-green-700 text-sm">
-              {{ page.canonical_url || 'https://example.com/' }}{{ page.slug }}
+            <p class="text-green-700 text-sm" >
+              {{'https://staging.gudanggrosiran.com' }}{{ page.slug }}
             </p>
           </div>
           <p class="text-gray-700 text-sm">

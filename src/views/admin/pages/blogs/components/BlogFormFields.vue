@@ -169,7 +169,7 @@ const handleCancel = () => {
           :disabled="saving"
           type="submit"
         >
-          {{ isEditMode ? 'Perbarui' : 'Simpan' }}
+          {{ isEditMode ? 'Update' : 'Create' }}
         </v-btn>
         <v-btn 
           color="secondary" 
