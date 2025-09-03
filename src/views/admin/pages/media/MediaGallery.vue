@@ -73,11 +73,10 @@ const downloadImage = () => {
       <!-- Upload Button -->
       <div class="mb-6">
         <v-btn 
-          color="primary" 
-          prepend-icon="mdi-upload"
+          color="primary"
           @click="openUploadModal"
         >
-          Upload Images
+          Upload
         </v-btn>
       </div>
 

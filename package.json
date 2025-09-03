@@ -28,6 +28,7 @@
     "ant-design-vue": "4.2.6",
     "apexcharts": "4.3.0",
     "axios": "^1.11.0",
+    "lucide-vue-next": "^0.542.0",
     "pinia": "2.3.0",
     "primeicons": "^7.0.0",
     "primevue": "^3.53.1",

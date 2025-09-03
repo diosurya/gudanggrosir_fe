@@ -7,7 +7,7 @@ import SkeletonLoader from "@/components/shared/SkeletonLoader.vue"
 import BlogFormFields from "./components/BlogFormFields.vue"
 import BlogSidebar from "./components/BlogSidebar.vue"
 import { blogService, type Blog } from "@/api/services/blogService"
-import apiClient from "@/api/axios"
+import apiClient, {BASE_URL} from "@/api/axios"
 import { multipartRequest } from "@/api/multipartRequest"
 
 const router = useRouter()

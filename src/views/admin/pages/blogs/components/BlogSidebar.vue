@@ -1,5 +1,5 @@
 <template>
-  <v-col cols="12">
+  <v-col cols="12" style="padding-top:0;">
     <!-- Status -->
     <UiParentCard title="Publish" class="mb-3">
       <template v-if="loading">
@@ -53,7 +53,7 @@
             <div class="flex flex-col items-center gap-4">
               <div v-if="previewSrc" class="relative">
                 <img
-                  :src="previewSrc"
+                  :src="previewSrcFinal"
                   alt="Preview Image"
                   class="previewSrc"
                 />
@@ -99,10 +99,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import UiParentCard from '@/components/shared/UiParentCard.vue'
 import SkeletonLoader from '@/components/shared/SkeletonLoader.vue'
-import SelectCategory from './CategorySelect.vue' // pastikan path-nya sesuai
+import SelectCategory from './CategorySelect.vue'
+import apiClient, {BASE_URL} from "@/api/axios"
 
 interface Category {
   id: string
@@ -175,6 +176,11 @@ const onCategoryAdded = (newCategory: Category) => {
   localBlog.value.category_id = newCategory.id
   emitUpdate()
 }
+
+const previewSrcFinal = computed<string | undefined>(() => {
+  return `${BASE_URL}${localBlog.value.image_url}`
+})
+
 </script>
 
 <style scoped>

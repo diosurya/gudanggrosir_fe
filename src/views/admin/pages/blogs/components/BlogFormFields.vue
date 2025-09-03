@@ -160,26 +160,23 @@ const handleCancel = () => {
       </v-col>
 
       <!-- Action Buttons -->
-      <v-col cols="12" class="d-flex gap-3">
+      <v-col cols="12" class="d-flex gap-3 mb-3">
         <v-btn 
-          color="primary" 
+          color="primary"
+          class="me-2" 
           @click="handleSave"
           :loading="saving"
           :disabled="saving"
-          size="large"
           type="submit"
         >
-          <v-icon start>mdi-content-save</v-icon>
-          {{ isEditMode ? 'Update Blog' : 'Save Blog' }}
+          {{ isEditMode ? 'Perbarui' : 'Simpan' }}
         </v-btn>
         <v-btn 
           color="secondary" 
           variant="outlined"
           @click="handleCancel"
           :disabled="saving"
-          size="large"
         >
-          <v-icon start>mdi-cancel</v-icon>
           Cancel
         </v-btn>
       </v-col>

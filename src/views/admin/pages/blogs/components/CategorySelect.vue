@@ -11,14 +11,8 @@
       :loading="loading"
     />
     
-    <v-btn 
-      color="primary" 
-      size="small" 
-      class="mt-2" 
-      prepend-icon="mdi-plus"
-      @click="openAddDialog"
-    >
-      Add Category
+    <v-btn color="primary" @click="openAddDialog">
+      Tambah Kategori
     </v-btn>
 
     <!-- Add Category Dialog -->

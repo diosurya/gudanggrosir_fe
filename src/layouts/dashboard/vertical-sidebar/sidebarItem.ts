@@ -1,16 +1,17 @@
 // icons
 import {
-  QuestionOutlined,
   DashboardOutlined,
-  ChromeOutlined,
-  LoginOutlined,
   ProfileOutlined,
-  FontSizeOutlined,
-  BgColorsOutlined,
-  BarcodeOutlined,
-  CrownOutlined,
+  HomeOutlined,
   SettingOutlined,
+  FormOutlined,
+  LayoutOutlined,
+  ShoppingOutlined,
+  LaptopOutlined,
+ PictureOutlined,
 } from '@ant-design/icons-vue';
+
+import { StickyNote } from "lucide-vue-next";
 
 export interface menu {
   header?: string;
@@ -37,19 +38,19 @@ const sidebarItem: menu[] = [
   },
   {
     title: 'Beranda',
-    icon: DashboardOutlined,
+    icon: HomeOutlined,
     to: '/admin/pages/beranda'
   },
   {
     title: 'Pages',
-    icon: DashboardOutlined,
+    icon: LayoutOutlined,
     to: '/admin/pages'
   },
 
   { header: 'Posts' },
   {
     title: 'Blogs',
-    icon: ProfileOutlined,
+    icon: FormOutlined,
     to: '/admin/pages/blogs',
     children: [
         {
@@ -69,7 +70,7 @@ const sidebarItem: menu[] = [
   { header: 'E-Commerce' },
   {
     title: 'Products',
-    icon: ProfileOutlined,
+    icon: ShoppingOutlined,
     to: '/admin/ecommerce/products',
       children: [
         {
@@ -90,7 +91,7 @@ const sidebarItem: menu[] = [
   { header: 'Media' },
   {
     title: 'Media',
-    icon: SettingOutlined,
+    icon: PictureOutlined,
     to: '/admin/pages/media'
   },
 
